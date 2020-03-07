@@ -10,15 +10,18 @@ const etapasServices = require('../services/etapasServices');
 module.exports = {
   // Retorna todas as etapas
   async index(req, res) {
-    const etapas = await etapasServices.index();
+    const projeto = req.params.projetoId;
+    const usuario = req.userId;
+
+    const etapas = await etapasServices.index(projeto, usuario);
 
     return res.json(etapas);
   },
   // Retorna uma etapa específica
   async show(req, res) {
-    const { id } = req.params;
+    const { projetoId, etapaId } = req.params;
 
-    const etapa = await etapasServices.show(id);
+    const etapa = await etapasServices.show(projetoId, etapaId);
 
     // Checa se o parâmetro da requisição é um id existente
     if (!etapa) {
@@ -34,31 +37,33 @@ module.exports = {
       titulo: Yup.string().required(),
       descricao: Yup.string().required(),
       detalhes: Yup.array(),
+      projeto_id: Yup.string().required(),
     });
 
     // Caso os dados não estejam no formato esperado, retorna um erro
-    if(!(await schema.isValid(req.body))) {
+    if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Falha na validação' });
     }
 
-    const {
-      titulo, descricao, detalhes,
-    } = req.body;
+    const { titulo, descricao, detalhes, projeto_id } = req.body;
 
     const etapa = await etapasServices.store(
       titulo,
       descricao,
       detalhes,
+      projeto_id
     );
 
-    // Verifica se usuário está tentando inserir uma etapa com um nome igual
+    // Verifica se usuário está tentando inserir uma etapa com uma descrição igual
     if (!etapa) {
-      return res.status(400).json({ error: 'Já existe uma etapa com este nome' });
+      return res
+        .status(400)
+        .json({ error: 'Já existe uma etapa cadastrada com estes dados' });
     }
 
     return res.json(etapa);
   },
-  
+
   // Alteração do conteúdo de uma etapa
   async update(req, res) {
     // Validação dos dados enviados no formulário
@@ -66,10 +71,11 @@ module.exports = {
       titulo: Yup.string(),
       descricao: Yup.string(),
       detalhes: Yup.array(),
+      projeto_id: Yup.string(),
     });
 
     // Caso os dados não estejam no formato esperado, retorna um erro
-    if(!(await schema.isValid(req.body))) {
+    if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Falha na validação' });
     }
     const { id } = req.params;

@@ -1,15 +1,13 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
-const detalhesSchema = new Schema(
-  {
-    item: String,
-    checked: false,
-  }
-)
+const detalhesSchema = new Schema({
+  item: String,
+  checked: false,
+});
 
-const EtapasSchema = new Schema(
+const EtapaSchema = new Schema(
   {
     titulo: String,
     descricao: String,
@@ -20,7 +18,8 @@ const EtapasSchema = new Schema(
       ref: 'Projeto',
       required: true,
     },
-  }
-)
+  },
+  { collection: 'etapas' }
+);
 
-module.exports = mongoose.model('Etapas', EtapasSchema);
+module.exports = mongoose.model('Etapa', EtapaSchema);

@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
-//const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose').set('debug', true);
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const UsuarioSchema = new Schema({
   nome: String,
@@ -18,14 +17,10 @@ const UsuarioSchema = new Schema({
   complemento: String,
   cidade: String,
   estado: String,
-  projeto_id: {
-    type: Schema.Types.ObjectId,
-    ref: 'Projeto',
-  },
 });
- 
-UsuarioSchema.virtual('password').get(async usuario => {
-  return await usuario.password;
+
+UsuarioSchema.virtual('password').get(usuario => {
+  return usuario.password;
 });
 
 module.exports = mongoose.model('Usuario', UsuarioSchema);

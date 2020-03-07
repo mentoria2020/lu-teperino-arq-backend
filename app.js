@@ -1,3 +1,4 @@
+require('dotenv/config');
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -14,10 +15,13 @@ const etapasRouter = require('./routes/etapas');
 const orcamentosRouter = require('./routes/orcamentos');
 const sessionRouter = require('./routes/session');
 const cadastroRouter = require('./routes/cadastro');
-const etapasProjetoRouter = require('./routes/etapasProjeto');
+const projetoRouter = require('./routes/projetos');
+const arquivosRouter = require('./routes/arquivos');
+const pagamentosRouter = require('./routes/pagamentos');
 
 const app = express();
-const mongodb = 'mongodb+srv://lalves86:p3SXGK6PBUHCGuBL@cluster0-sammj.mongodb.net/lu-teperino-arq?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true';
+const mongodb =
+  'mongodb+srv://lalves86:p3SXGK6PBUHCGuBL@cluster0-sammj.mongodb.net/lu-teperino-arq?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true';
 
 mongoose.connect(mongodb, {
   useNewUrlParser: true,
@@ -37,7 +41,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Rotas públicas
 app.use('/login', sessionRouter);
@@ -47,10 +51,12 @@ app.use('/', indexRouter);
 app.use(authMiddleware.authHeader);
 
 // Rotas que exigem validação
-app.use('/projetos', etapasProjetoRouter);
+app.use('/projetos', projetoRouter);
 app.use('/usuarios', usersRouter);
 app.use('/etapas', etapasRouter);
 app.use('/orcamentos', orcamentosRouter);
+app.use('/arquivos', arquivosRouter);
+app.use('/pagamentos', pagamentosRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
