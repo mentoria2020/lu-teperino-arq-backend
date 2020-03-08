@@ -8,9 +8,6 @@ jobs:
         steps:
             - checkout
             - node/with-cache:
-        steps:
-            - run: npm install
-            - run: npm test
 deploy-prod:
     docker:
         # specify the version you desire here (you might not want node)
